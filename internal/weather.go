@@ -1,10 +1,8 @@
 package internal
 
 import (
-	"bytes"
 	"fmt"
 	"github.com/zapling/yr.no-golang-client/pkg/yr"
-	"os/exec"
 	"strings"
 )
 
@@ -30,14 +28,4 @@ func GetForecast(config Configuration) string {
 	emojie := Emojies[symbols[0]]
 
 	return temperature + "°C " + emojie
-}
-
-func GetCurrentSsid() string {
-	cmd := "iw dev | grep ssid | awk '{print $2'}"
-	ssid, err := exec.Command("bash", "-c", cmd).Output()
-	if err != nil {
-		return ""
-	}
-
-	return string(bytes.Trim(ssid, "\n"))
 }
