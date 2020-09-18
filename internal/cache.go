@@ -2,9 +2,10 @@ package internal
 
 var cacheFolder = "weather-applet"
 
-func GetCacheDir(xdg_data_dirs string) string {
-	if xdg_data_dirs != "" {
-		return xdg_data_dirs + "/" + cacheFolder
+func GetCacheDir(home_dir string, xdg_data_home string) string {
+	if xdg_data_home != "" {
+		return xdg_data_home + "/" + cacheFolder
 	}
-	return "/usr/local/share/" + cacheFolder
+
+	return home_dir + "/.local/share/" + cacheFolder
 }
