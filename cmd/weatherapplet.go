@@ -7,15 +7,38 @@ import (
 )
 
 func main() {
+	cacheDir, err := os.UserCacheDir()
+	if err != nil {
+		fmt.Print("Could not get cache dir")
+		os.Exit(1)
+	}
+
+	configs := internal.GetConfig()
+	cacheMan := internal.NewCacheManager(cacheDir)
+
 	ssid := internal.GetCurrentSsid()
 	if ssid == "" {
 		os.Exit(1)
 	}
 
-	config := internal.GetConfig()
-	for i := range config {
-		if config[i].Ssid == ssid {
-			fmt.Println(internal.GetForecast(config[i]))
+	for i := range configs {
+		config := configs[i]
+		if ssid != config.Ssid {
+			continue
 		}
+
+		cached := cacheMan.GetCachedValue(ssid)
+		if cached != "" {
+			fmt.Println(cached)
+			os.Exit(0)
+		}
+
+		forecast := internal.GetForecast(config)
+		cacheMan.WriteCache(ssid, forecast)
+
+		fmt.Println(forecast)
+		os.Exit(0)
 	}
+
+	os.Exit(1)
 }
