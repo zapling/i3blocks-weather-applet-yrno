@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-func GetForecast(config Configuration) string {
+func GetForecast(config configuration) string {
 	forecast, err := yr.GetLocationForecast(
 		config.Latitude,
 		config.Longitude,
