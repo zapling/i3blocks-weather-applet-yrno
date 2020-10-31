@@ -21,12 +21,12 @@ func NewCacheManager(cacheFolder string) *CacheManager {
 	return &CacheManager{cacheFolder: cacheFolder}
 }
 
-func (c *CacheManager) GetCachedValue(ssid string) string {
+func (c *CacheManager) GetValue(ssid string) string {
 	var cache []CacheRecord
 	bytes, _ := ioutil.ReadFile(c.getPath() + "/cache.json")
 	json.Unmarshal(bytes, &cache)
 
-	for _, record := range cache {
+	for index, record := range cache {
 		if record.SSID != ssid {
 			continue
 		}
@@ -34,6 +34,10 @@ func (c *CacheManager) GetCachedValue(ssid string) string {
 		if time.Now().Unix() < record.ValidUntil {
 			return record.Value
 		}
+
+		// cache invalid
+		cache = append(cache[:index], cache[index+1:]...)
+		c.write(cache)
 
 		return ""
 	}
@@ -72,6 +76,23 @@ func (c *CacheManager) getRecords() []CacheRecord {
 	json.Unmarshal(bytes, &cache)
 
 	return cache
+}
+
+func (c *CacheManager) write(cache []CacheRecord) {
+	file, err := os.OpenFile(c.getPath()+"/cache.json", os.O_RDWR|os.O_TRUNC, 0755)
+	if err != nil {
+		return // do we care?
+	}
+
+	bytes, err := json.Marshal(&cache)
+	if err != nil {
+		return // do we care
+	}
+
+	_, err = file.Write(bytes)
+	if err != nil {
+		return // do we care
+	}
 }
 
 func (c *CacheManager) createEmptyCacheFile() {

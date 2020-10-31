@@ -27,7 +27,7 @@ func main() {
 			continue
 		}
 
-		cached := cacheMan.GetCachedValue(ssid)
+		cached := cacheMan.GetValue(ssid)
 		if cached != "" {
 			fmt.Println(cached)
 			os.Exit(0)
