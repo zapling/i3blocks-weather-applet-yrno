@@ -27,14 +27,14 @@ func main() {
 			continue
 		}
 
-		cached := cacheMan.GetValue(ssid)
+		cached := cacheMan.GetCache(ssid)
 		if cached != "" {
 			fmt.Println(cached)
 			os.Exit(0)
 		}
 
 		forecast := internal.GetForecast(config)
-		cacheMan.WriteCache(ssid, forecast)
+		cacheMan.SetCache(ssid, forecast)
 
 		fmt.Println(forecast)
 		os.Exit(0)
