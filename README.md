@@ -9,12 +9,17 @@ go install cmd/weatherapplet.go
 
 # Configuration
 
-When first launching the application a config file will be generated and place in your config
+When first launching the application a config file will be generated and placed in your config
 directory.
-
-E.g
 
 ```
 $HOME/.config/weather-applet/config.json
 ```
 
+You can modify the config and add how many SSIDs you want. Provide latitude and longitude cordinations for your location.
+
+```
+[
+  {"ssid": "My wifi network name", "latitude": 57.7, "longitude": 11.9}
+]
+```
