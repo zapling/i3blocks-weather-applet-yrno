@@ -43,25 +43,4 @@ func main() {
 
 	fmt.Println(forecast)
 	os.Exit(0)
-
-	// for i := range  {
-	// 	config := configs[i]
-	// 	if ssid != config.Ssid {
-	// 		continue
-	// 	}
-
-	// 	cached := cacheMan.GetCache(ssid)
-	// 	if cached != "" {
-	// 		fmt.Println(cached)
-	// 		os.Exit(0)
-	// 	}
-
-	// 	forecast := internal.GetForecast(config)
-	// 	cacheMan.SetCache(ssid, forecast)
-
-	// 	fmt.Println(forecast)
-	// 	os.Exit(0)
-	// }
-
-	os.Exit(1)
 }
