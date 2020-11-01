@@ -42,7 +42,7 @@ func (c *ConfigManager) getConfigurations() []configuration {
 
 	file, err := os.Open(c.getPath(true))
 	if err != nil {
-		file, err = os.OpenFile(c.getPath(true), os.O_RDWR, 0755)
+		file, err = os.OpenFile(c.getPath(true), os.O_RDWR|os.O_CREATE, 0755)
 		if err != nil {
 			fmt.Println("Could not create default config")
 			os.Exit(1)
