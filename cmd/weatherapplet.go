@@ -13,32 +13,55 @@ func main() {
 		os.Exit(1)
 	}
 
-	configs := internal.GetConfig()
+	configDir, err := os.UserConfigDir()
+	if err != nil {
+		fmt.Println("Could not get config dir")
+		os.Exit(1)
+	}
+
 	cacheMan := internal.NewCacheManager(cacheDir)
+	confMan := internal.NewConfigManager(configDir)
 
 	ssid := internal.GetCurrentSsid()
 	if ssid == "" {
 		os.Exit(1)
 	}
 
-	for i := range configs {
-		config := configs[i]
-		if ssid != config.Ssid {
-			continue
-		}
-
-		cached := cacheMan.GetCache(ssid)
-		if cached != "" {
-			fmt.Println(cached)
-			os.Exit(0)
-		}
-
-		forecast := internal.GetForecast(config)
-		cacheMan.SetCache(ssid, forecast)
-
-		fmt.Println(forecast)
+	config := confMan.GetConfigBySSID(ssid)
+	if config == nil {
 		os.Exit(0)
 	}
+
+	cached := cacheMan.GetCache(ssid)
+	if cached != "" {
+		fmt.Println(cached)
+		os.Exit(0)
+	}
+
+	forecast := internal.GetForecast(config)
+	cacheMan.SetCache(ssid, forecast)
+
+	fmt.Println(forecast)
+	os.Exit(0)
+
+	// for i := range  {
+	// 	config := configs[i]
+	// 	if ssid != config.Ssid {
+	// 		continue
+	// 	}
+
+	// 	cached := cacheMan.GetCache(ssid)
+	// 	if cached != "" {
+	// 		fmt.Println(cached)
+	// 		os.Exit(0)
+	// 	}
+
+	// 	forecast := internal.GetForecast(config)
+	// 	cacheMan.SetCache(ssid, forecast)
+
+	// 	fmt.Println(forecast)
+	// 	os.Exit(0)
+	// }
 
 	os.Exit(1)
 }

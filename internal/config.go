@@ -21,7 +21,17 @@ func NewConfigManager(configPath string) *ConfigManager {
 	return &ConfigManager{configPath: configPath}
 }
 
-func (c *ConfigManager) GetConfigBySSID(ssid string) {}
+func (c *ConfigManager) GetConfigBySSID(ssid string) *configuration {
+	configs := c.getConfigurations()
+	for _, config := range configs {
+		if config.SSID != ssid {
+			continue
+		}
+		return &config
+	}
+
+	return nil
+}
 
 func (c *ConfigManager) getConfigurations() []configuration {
 	err := os.MkdirAll(c.getPath(false), 0755)
