@@ -13,7 +13,7 @@ When first launching the application a config file will be generated and placed 
 directory.
 
 ```
-$HOME/.config/weather-applet/config.json
+CONFIG_DIR/weather-applet/config.json
 ```
 
 You can modify the config and add how many SSIDs you want. Provide latitude and longitude cordinations for your location.
@@ -23,3 +23,12 @@ You can modify the config and add how many SSIDs you want. Provide latitude and 
   {"ssid": "My wifi network name", "latitude": 57.7, "longitude": 11.9}
 ]
 ```
+
+## Caching
+
+Weather forecasts are cached for 1 hour. The cache is saved to a cache file in your local cache directory.
+
+```
+CACHE_DIR/weather-applet/cache.json
+```
+
