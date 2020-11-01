@@ -50,7 +50,9 @@ func (c *ConfigManager) getConfigurations() []configuration {
 
 		defer file.Close()
 
-		defaults := &configuration{SSID: "My WIFI network", Latitude: 57.7, Longitude: 11.9}
+		defaults := []configuration{
+            {SSID: "My WIFI network", Latitude: 57.7, Longitude: 11.9},
+        }
 		bytes, err := json.Marshal(defaults)
 		if err != nil {
 			fmt.Println("Could not convert default config to json")
@@ -59,7 +61,7 @@ func (c *ConfigManager) getConfigurations() []configuration {
 
 		file.Write(bytes)
 
-		return []configuration{*defaults}
+		return defaults
 	}
 
 	defer file.Close()
