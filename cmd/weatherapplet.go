@@ -20,7 +20,11 @@ func main() {
 	}
 
 	cacheMan := internal.NewCacheManager(cacheDir)
-	confMan := internal.NewConfigManager(configDir)
+	confMan, err := internal.NewConfigManager(configDir)
+    if err != nil {
+        fmt.Println(err)
+        os.Exit(1)
+    }
 
 	ssid := internal.GetCurrentSsid()
 	if ssid == "" {

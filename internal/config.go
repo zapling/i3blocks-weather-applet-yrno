@@ -2,6 +2,7 @@ package internal
 
 import (
 	"encoding/json"
+    "errors"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -13,12 +14,18 @@ type configuration struct {
 	Longitude float64 `json:"longitude"`
 }
 
+var EmptyConfigPath = errors.New("Can not instantiate with empty config path")
+
 type ConfigManager struct {
 	configPath string
 }
 
-func NewConfigManager(configPath string) *ConfigManager {
-	return &ConfigManager{configPath: configPath}
+func NewConfigManager(configPath string) (*ConfigManager, error) {
+    if configPath == "" {
+        return &ConfigManager{}, EmptyConfigPath
+    }
+
+	return &ConfigManager{configPath: configPath}, nil
 }
 
 func (c *ConfigManager) GetConfigBySSID(ssid string) *configuration {
