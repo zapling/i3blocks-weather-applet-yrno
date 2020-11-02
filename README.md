@@ -1,5 +1,8 @@
 # i3blocks-weather-applet-yrno
-A script that retreives the current temperature based on the current SSID you are connected to.
+
+A weather-applet used with `i3-blocks`. 
+
+Uses your current SSID in order to get defined cordinations of where to get a forecast from. Forecasts are fetched from [Yr.no](yr.no), a norwegian weather forecast website.
 
 # Installation
 
@@ -13,7 +16,7 @@ When first launching the application a config file will be generated and placed 
 directory.
 
 ```
-CONFIG_DIR/weather-applet/config.json
+$XDG_CONFIG_HOME/weather-applet/config.json
 ```
 
 You can modify the config and add how many SSIDs you want. Provide latitude and longitude cordinations for your location.
@@ -29,6 +32,6 @@ You can modify the config and add how many SSIDs you want. Provide latitude and 
 Weather forecasts are cached for 1 hour. The cache is saved to a cache file in your local cache directory.
 
 ```
-CACHE_DIR/weather-applet/cache.json
+$XDG_CACHE_HOME/weather-applet/cache.json
 ```
 
