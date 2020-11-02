@@ -1,5 +1,8 @@
 # i3blocks-weather-applet-yrno
 
+![Image](image.png)
+
+
 A weather-applet used with `i3-blocks`. 
 
 Uses your current SSID in order to get defined cordinations of where to get a forecast from. Forecasts are fetched from [Yr.no](yr.no), a norwegian weather forecast website.
