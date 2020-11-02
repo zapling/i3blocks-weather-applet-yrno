@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"github.com/zapling/yr.no-golang-client/pkg/yr"
 	"strings"
+    "time"
+    "os"
 )
 
 func GetForecast(config *configuration) string {
@@ -17,15 +19,27 @@ func GetForecast(config *configuration) string {
 		return ""
 	}
 
-	temperature := fmt.Sprintf(
-		"%.0f",
-		forecast.Properties.Timeseries[0].Data.Instant.Details.AirTemperature,
-	)
-	symbols := strings.Split(
-		forecast.Properties.Timeseries[0].Data.Next1Hours.Summary.SymbolCode,
-		"_",
-	)
-	emojie := Emojies[symbols[0]]
+    now := time.Now()
+    for _, data := range forecast.Properties.Timeseries {
+        forecastTime, err := time.Parse(time.RFC3339, data.Time)
+        if err != nil {
+            fmt.Println("Could not decode time")
+            os.Exit(1)
+        }
 
-	return temperature + "°C " + emojie
+        if now.YearDay() != forecastTime.YearDay() || now.Hour() != forecastTime.Hour() {
+            continue
+        }
+
+        temperature := fmt.Sprintf("%.0f", data.Data.Instant.Details.AirTemperature)
+        symbols := strings.Split(
+            data.Data.Next1Hours.Summary.SymbolCode,
+            "_",
+        )
+
+        emojie := Emojies[symbols[0]]
+        return temperature + "°C " + emojie
+    }
+
+    return "No forecast for this time. Bug?"
 }
