@@ -4,7 +4,7 @@ var Emojies = map[string]string{
 	"clearsky":                    "☀️",
 	"cloudy":                      "☁️",
 	"fair":                        "🌤️",
-	"fog":                         "🌁",
+	"fog":                         "🌫️",
 	"heavyrain":                   "🌧️",
 	"heavyrainandthunder":         "⛈️",
 	"heavyrainshowers":            "🌦️",

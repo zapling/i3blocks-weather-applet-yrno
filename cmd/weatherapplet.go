@@ -2,8 +2,9 @@ package main
 
 import (
 	"fmt"
-	"github.com/zapling/i3blocks-weather-applet-yrno/internal"
 	"os"
+
+	"github.com/zapling/i3blocks-weather-applet-yrno/internal"
 )
 
 func main() {
@@ -20,7 +21,7 @@ func main() {
 	}
 
 	cacheMan := internal.NewCacheManager(cacheDir)
-	confMan, err := internal.NewConfigManager(configDir)
+	config, err := internal.LoadConfig(configDir)
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
@@ -31,8 +32,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	config := confMan.GetConfigBySSID(ssid)
-	if config == nil {
+	if config.GetConfigBySSID(ssid) == nil {
 		os.Exit(0)
 	}
 
@@ -42,7 +42,7 @@ func main() {
 		os.Exit(0)
 	}
 
-	forecast := internal.GetForecast(config)
+	forecast := internal.GetForecast(config, ssid)
 	cacheMan.SetCache(ssid, forecast)
 
 	fmt.Println(forecast)

@@ -2,98 +2,92 @@ package internal
 
 import (
 	"encoding/json"
-    "errors"
+	"errors"
 	"fmt"
-	"io/ioutil"
 	"os"
 )
 
-type configuration struct {
-	SSID      string  `json:"ssid"`
+var EmptyConfigPath = errors.New("Can not instantiate with empty config path")
+
+var defaultConfig = &config{
+	SSIDS: map[string]ssid{
+		"My WIFI network": {Latitude: 57.7, Longitude: 11.9},
+	},
+	EmojieOverride: nil,
+}
+
+type config struct {
+	SSIDS          map[string]ssid    `json:"ssids"`
+	EmojieOverride *map[string]string `json:"emojie_override"`
+}
+
+func (c *config) GetConfigBySSID(ssid string) *ssid {
+	ssidConf, exists := c.SSIDS[ssid]
+	if !exists {
+		return nil
+	}
+
+	return &ssidConf
+}
+
+func (c *config) GetEmojie(name string) string {
+	if c.EmojieOverride == nil {
+		return Emojies[name]
+	}
+
+	if emojie, exists := (*c.EmojieOverride)[name]; exists {
+		return emojie
+	}
+
+	return Emojies[name]
+}
+
+type ssid struct {
 	Latitude  float64 `json:"latitude"`
 	Longitude float64 `json:"longitude"`
 }
 
-var EmptyConfigPath = errors.New("Can not instantiate with empty config path")
+func LoadConfig(configPath string) (*config, error) {
+	var loadedConfig config
 
-type ConfigManager struct {
-	configPath string
-}
+	if configPath == "" {
+		return nil, EmptyConfigPath
+	}
 
-func NewConfigManager(configPath string) (*ConfigManager, error) {
-    if configPath == "" {
-        return &ConfigManager{}, EmptyConfigPath
-    }
+	path := configPath + "/weather-applet"
+	fullPath := path + "/config.json"
 
-	return &ConfigManager{configPath: configPath}, nil
-}
+	if err := os.MkdirAll(path, 0755); err != nil {
+		return nil, fmt.Errorf("Could not create or read config path")
+	}
 
-func (c *ConfigManager) GetConfigBySSID(ssid string) *configuration {
-	configs := c.getConfigurations()
-	for _, config := range configs {
-		if config.SSID != ssid {
-			continue
+	file, err := os.Open(fullPath)
+	if err != nil {
+		if err := writeDefaultConfig(fullPath); err != nil {
+			return nil, fmt.Errorf("Failed to save default config: %s", err)
 		}
-		return &config
+
+		return defaultConfig, nil
+	}
+	defer file.Close()
+
+	if err := json.NewDecoder(file).Decode(&loadedConfig); err != nil {
+		return nil, fmt.Errorf("Failed to load config: %s", err)
+	}
+
+	return &loadedConfig, nil
+}
+
+func writeDefaultConfig(fullPath string) error {
+	file, err := os.OpenFile(fullPath, os.O_RDWR|os.O_CREATE, 0755)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+
+	if err := json.NewEncoder(file).Encode(defaultConfig); err != nil {
+		return err
 	}
 
 	return nil
-}
-
-func (c *ConfigManager) getConfigurations() []configuration {
-	err := os.MkdirAll(c.getPath(false), 0755)
-	if err != nil {
-		fmt.Println("Could not create or read config path")
-		os.Exit(1)
-	}
-
-	file, err := os.Open(c.getPath(true))
-	if err != nil {
-		file, err = os.OpenFile(c.getPath(true), os.O_RDWR|os.O_CREATE, 0755)
-		if err != nil {
-			fmt.Println("Could not create default config")
-			os.Exit(1)
-		}
-
-		defer file.Close()
-
-		defaults := []configuration{
-            {SSID: "My WIFI network", Latitude: 57.7, Longitude: 11.9},
-        }
-		bytes, err := json.Marshal(defaults)
-		if err != nil {
-			fmt.Println("Could not convert default config to json")
-			os.Exit(1)
-		}
-
-		file.Write(bytes)
-
-		return defaults
-	}
-
-	defer file.Close()
-
-	var configs []configuration
-
-	bytes, err := ioutil.ReadAll(file)
-	if err != nil {
-		fmt.Println("Could not read from config file")
-		os.Exit(1)
-	}
-
-	err = json.Unmarshal(bytes, &configs)
-	if err != nil {
-		fmt.Println("Could not read config content, is formatting correct?")
-		os.Exit(1)
-	}
-	return configs
-}
-
-func (c *ConfigManager) getPath(fullPath bool) string {
-	path := c.configPath + "/weather-applet"
-	if fullPath == true {
-		path += "/config.json"
-	}
-
-	return path
 }

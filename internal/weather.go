@@ -2,16 +2,19 @@ package internal
 
 import (
 	"fmt"
-	"github.com/zapling/yr.no-golang-client/pkg/yr"
+	"os"
 	"strings"
-    "time"
-    "os"
+	"time"
+
+	"github.com/zapling/yr.no-golang-client/pkg/yr"
 )
 
-func GetForecast(config *configuration) string {
+func GetForecast(config *config, ssid string) string {
+	currentCfg := config.GetConfigBySSID(ssid)
+
 	forecast, err := yr.GetLocationForecast(
-		config.Latitude,
-		config.Longitude,
+		currentCfg.Latitude,
+		currentCfg.Longitude,
 		"WeatherApplet 1.0",
 	)
 
@@ -19,27 +22,28 @@ func GetForecast(config *configuration) string {
 		return ""
 	}
 
-    now := time.Now()
-    for _, data := range forecast.Properties.Timeseries {
-        forecastTime, err := time.Parse(time.RFC3339, data.Time)
-        if err != nil {
-            fmt.Println("Could not decode time")
-            os.Exit(1)
-        }
+	now := time.Now()
+	for _, data := range forecast.Properties.Timeseries {
+		forecastTime, err := time.Parse(time.RFC3339, data.Time)
+		if err != nil {
+			fmt.Println("Could not decode time")
+			os.Exit(1)
+		}
 
-        if now.YearDay() != forecastTime.YearDay() || now.Hour() != forecastTime.Hour() {
-            continue
-        }
+		if now.YearDay() != forecastTime.YearDay() || now.Hour() != forecastTime.Hour() {
+			continue
+		}
 
-        temperature := fmt.Sprintf("%.0f", data.Data.Instant.Details.AirTemperature)
-        symbols := strings.Split(
-            data.Data.Next1Hours.Summary.SymbolCode,
-            "_",
-        )
+		temperature := fmt.Sprintf("%.0f", data.Data.Instant.Details.AirTemperature)
+		symbols := strings.Split(
+			data.Data.Next1Hours.Summary.SymbolCode,
+			"_",
+		)
 
-        emojie := Emojies[symbols[0]]
-        return temperature + "°C " + emojie
-    }
+		symbolName := symbols[0]
+		emojie := config.GetEmojie(symbolName)
+		return temperature + "°C " + emojie
+	}
 
-    return "No forecast for this time. Bug?"
+	return "No forecast for this time. Bug?"
 }
