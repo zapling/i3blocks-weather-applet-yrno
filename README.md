@@ -24,10 +24,16 @@ $XDG_CONFIG_HOME/weather-applet/config.json
 
 You can modify the config and add how many SSIDs you want. Provide latitude and longitude cordinations for your location.
 
-```
-[
-  {"ssid": "My wifi network name", "latitude": 57.7, "longitude": 11.9}
-]
+```json
+{
+    "ssids":{
+        "My WIFI network": {"latitude":57.7, "longitude":11.9}
+    },
+    "emojie_override": {
+        "fog": "🌫️"
+    }
+}
+
 ```
 
 ## Caching
