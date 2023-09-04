@@ -27,8 +27,14 @@ func main() {
 		os.Exit(1)
 	}
 
-	ssid := internal.GetCurrentSsid()
+	ssid, err := internal.GetCurrentSsid()
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+
 	if ssid == "" {
+		fmt.Println("no ssid")
 		os.Exit(1)
 	}
 
